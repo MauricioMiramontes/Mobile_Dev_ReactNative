@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
-import {
-    Text, View, ScrollView, FlatList, Modal, StyleSheet, Button,
-    Alert, PanResponder
-} from 'react-native';
+import { Text, View, ScrollView, FlatList, Modal, StyleSheet, Button, Alert, PanResponder } from 'react-native';
 import { Card, Icon, Rating, Input } from 'react-native-elements';
 import { connect } from 'react-redux';
 import { baseUrl } from '../shared/baseUrl';
@@ -55,11 +52,11 @@ function RenderDish(props) {
 
     const dish = props.dish;
 
-    handleViewRef = ref => this.view = ref;
-
-    const recognizeDrag = ({ moveX, moveY, dx, dy }) => {
-        if ( dx < -200 )
-            return true;
+    function recognizeDrag({ moveX, moveY, dx, dy }) {
+        if (dx < -200)
+            return 'Favorite';
+        else if (dx > 200)
+            return 'AddComment';
         else
             return false;
     }
@@ -69,20 +66,24 @@ function RenderDish(props) {
             return true;
         },
 
-        onPanResponderGrant: () => {this.view.rubberBand(1000).then(endState => console.log(endState.finished ? 'finished' : 'cancelled'));},
 
         onPanResponderEnd: (e, gestureState) => {
             console.log("pan responder end", gestureState);
-            if (recognizeDrag(gestureState))
+            if (recognizeDrag(gestureState) == 'Favorite')
                 Alert.alert(
                     'Add Favorite',
                     'Are you sure you wish to add ' + dish.name + ' to favorite?',
                     [
-                    {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel'},
-                    {text: 'OK', onPress: () => {props.favorite ? console.log('Already favorite') : props.onPress()}},
+                        { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+                        { text: 'OK', onPress: () => { props.favorite ? console.log('Already favorite') : props.onPress() } },
                     ],
                     { cancelable: false }
                 );
+            //Assigment 3: Task 3
+            else if (recognizeDrag(gestureState) == 'AddComment') {
+                props.onCommentPress();
+            }
+
 
             return true;
         }
@@ -91,8 +92,7 @@ function RenderDish(props) {
     if (dish != null) {
         return (
             <Animatable.View animation="fadeInDown" duration={2000} delay={1000}
-            ref={this.handleViewRef}
-            {...panResponder.panHandlers}>
+                {...panResponder.panHandlers}>
                 <Card
                     featuredTitle={dish.name}
                     image={{ uri: baseUrl + dish.image }}>
