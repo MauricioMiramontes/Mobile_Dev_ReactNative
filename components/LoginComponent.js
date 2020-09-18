@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text, ScrollView, Image } from 'react-native';
+import { View, StyleSheet, Text, ScrollView, Image, Alert } from 'react-native';
 import { Input, CheckBox, Button, Icon } from 'react-native-elements';
 import { createBottomTabNavigator } from 'react-navigation';
 import { baseUrl } from '../shared/baseUrl';
-import { Camera, Asset } from 'expo';
 import * as Permissions from 'expo-permissions'
 import * as ImagePicker from 'expo-image-picker'
 import * as SecureStore from 'expo-secure-store';
@@ -155,16 +154,22 @@ class RegisterTab extends Component {
     }
 
     processImage = async (imageUri) => {
-        let processedImage = await ImageManipulator.manipulate(
-            imageUri,
-            [
-                { resize: { width: 400 } }
-            ],
-            { format: 'png' }
-        );
-        console.log(processedImage);
-        this.setState({ imageUrl: processedImage.uri });
+        try {
 
+            let processedImage = await ImageManipulator.manipulateAsync(
+                imageUri,
+                [
+                    { resize: { width: 400 } }
+                ],
+                { format: 'png' }
+            );
+            console.log(processedImage);
+            this.setState({ imageUrl: processedImage.uri });
+
+        } catch (error) {
+            Alert.alert('Failed to process the Image')
+
+        }
     }
 
     static navigationOptions = {
