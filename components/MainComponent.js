@@ -145,7 +145,7 @@ const FavoritesNavigator = createStackNavigator({
 })
 
 const LoginNavigator = createStackNavigator({
-    Login: { screen: Login }
+    Login: Login
   }, {
   navigationOptions: ({ navigation }) => ({
     headerStyle: {
@@ -154,6 +154,7 @@ const LoginNavigator = createStackNavigator({
     headerTitleStyle: {
         color: "#fff"            
     },
+    title: 'Login',
     headerTintColor: "#fff",
     headerLeft: <Icon name="menu" size={24}
       iconStyle={{ color: 'white' }} 
@@ -178,6 +179,21 @@ const CustomDrawerContentComponent = (props) => (
 );
 
 const MainNavigator = createDrawerNavigator({
+    Login: 
+    { screen: LoginNavigator,
+      navigationOptions: {
+        title: 'Login',
+        drawerLabel: 'Login',
+        drawerIcon: ({ tintColor, focused }) => (
+          <Icon
+            name='sign-in'
+            type='font-awesome'            
+            size={24}
+            iconStyle={{ color: tintColor }}
+          />
+        ),
+      }
+    }, 
     Home:
     {
         screen: HomeNavigator,
@@ -275,21 +291,7 @@ const MainNavigator = createDrawerNavigator({
             ),
         }
     },
-    Login: 
-    { screen: LoginNavigator,
-      navigationOptions: {
-        title: 'Login',
-        drawerLabel: 'Login',
-        drawerIcon: ({ tintColor, focused }) => (
-          <Icon
-            name='sign-in'
-            type='font-awesome'            
-            size={24}
-            iconStyle={{ color: tintColor }}
-          />
-        ),
-      }
-    },  
+     
 }, {
     initialRouteName: 'Home',
     drawerBackgroundColor: '#D1C4E9',
