@@ -4,6 +4,7 @@ import DatePicker from 'react-native-datepicker';
 import * as Animatable from 'react-native-animatable';
 import * as Permissions from 'expo-permissions'
 import { Notifications } from 'expo';
+import * as Calendar from 'expo-calendar';
 
 class Reservation extends Component {
 
@@ -33,6 +34,18 @@ class Reservation extends Component {
         return permission;
     }
 
+    async obtainCalendarPermission() {
+        let permission = await Permissions.getAsync(Permissions.CALENDAR);
+        if (permission.status !== 'granted') {
+            permission = await Permissions.askAsync(Permissions.CALENDAR);
+            if (permission.status !== 'granted') {
+                Alert.alert('Permission not granted to access the calendar');
+            }
+        }
+        Alert.alert(permission.status)
+        return permission;
+    }
+
     async presentLocalNotification(date) {
         await this.obtainNotificationPermission();
         Notifications.createChannelAndroidAsync('Confusion', {
@@ -55,9 +68,42 @@ class Reservation extends Component {
         });
     }
 
+    //Assigment 4: Task 2
+    async addReservationToCalendar(date) {
+
+        await this.obtainCalendarPermission();
+
+        var startDate = new Date(Date.parse(date));
+        var endDate = new Date();
+        endDate.setHours(startDate.getHours() + 2);
+
+        await Calendar.createEventAsync({
+            calendarId: Calendar.DEFAULT,
+            details: {
+                title: 'Con Fusion Table Reservation',
+                startDate: startDate,
+                endDate: endDate,
+                allDay: false,
+                location: '121, Clear Water Bay Road, Clear Water Bay, Kowloon, Hong Kong',
+                timeZone: 'Asia/Hong_Kong'
+            }
+        })
+            .then(event => {
+                console.log('Date registered ');
+            })
+            .catch(error => {
+                console.log(error.message);
+
+            })
+
+
+    }
+
     handleReservation() {
         console.log(JSON.stringify(this.state))
         this.presentLocalNotification(this.state.date)
+        this.addReservationToCalendar(this.state.date)
+
     }
 
     resetForm() {
@@ -67,6 +113,8 @@ class Reservation extends Component {
             date: '',
         });
     }
+
+
 
     render() {
         return (

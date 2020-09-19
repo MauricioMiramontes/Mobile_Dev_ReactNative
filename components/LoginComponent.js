@@ -135,6 +135,22 @@ class RegisterTab extends Component {
             imageUrl: baseUrl + 'images/logo.png'
         }
     }
+    //Assigment 4: Task 1
+    getImageFromGallery = async () => {
+        let galleryPermission = await ImagePicker.requestCameraRollPermissionsAsync();
+
+        if (galleryPermission.granted === false) {
+            Alert.alert("Permission to access camera roll is required!");
+            return;
+        }
+
+        let galleryImage = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+        });
+        console.log(galleryImage);
+        this.processImage(galleryImage.uri);
+    }
 
     getImageFromCamera = async () => {
         const cameraPermission = await Permissions.askAsync(Permissions.CAMERA);
@@ -155,7 +171,6 @@ class RegisterTab extends Component {
 
     processImage = async (imageUri) => {
         try {
-
             let processedImage = await ImageManipulator.manipulateAsync(
                 imageUri,
                 [
@@ -165,11 +180,10 @@ class RegisterTab extends Component {
             );
             console.log(processedImage);
             this.setState({ imageUrl: processedImage.uri });
-
         } catch (error) {
             Alert.alert('Failed to process the Image')
-
         }
+
     }
 
     static navigationOptions = {
@@ -204,6 +218,10 @@ class RegisterTab extends Component {
                         <Button
                             title="Camera"
                             onPress={this.getImageFromCamera}
+                        />
+                        <Button
+                            title="Pick from gallery"
+                            onPress={this.getImageFromGallery}
                         />
                     </View>
                     <Input
